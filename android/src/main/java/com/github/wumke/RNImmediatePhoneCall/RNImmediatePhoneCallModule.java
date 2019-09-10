@@ -2,6 +2,7 @@ package com.github.wumke.RNImmediatePhoneCall;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -23,6 +24,7 @@ public class RNImmediatePhoneCallModule extends ReactContextBaseJavaModule {
 
     private ReactApplicationContext reactContext;
     private static String number = "";
+    private static int slot = 0;
     private static final int PERMISSIONS_REQUEST_ACCESS_CALL = 101;
 
     public RNImmediatePhoneCallModule(ReactApplicationContext reactContext) {
@@ -41,7 +43,7 @@ public class RNImmediatePhoneCallModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void immediatePhoneCall(String number, int slot) {
         RNImmediatePhoneCallModule.number = Uri.encode(number);
-        RNImmediatePhoneCallModule.slot = Uri.encode(slot);
+        RNImmediatePhoneCallModule.slot = slot;
 
         if (ContextCompat.checkSelfPermission(reactContext.getApplicationContext(),
                 android.Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
@@ -77,7 +79,7 @@ public class RNImmediatePhoneCallModule extends ReactContextBaseJavaModule {
         Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse(url));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        TelecomManager telecomManager = (TelecomManager) reactContext.getSystemService(Context.TELECOM_SERVICE);
+        TelecomManager telecomManager = (TelecomManager) rnImmediatePhoneCallModule.reactContext.getSystemService(Context.TELECOM_SERVICE);
         List<PhoneAccountHandle>    phoneAccountHandleList = telecomManager.getCallCapablePhoneAccounts();
         intent.putExtra("com.android.phone.force.slot", true);
         intent.putExtra("Cdma_Supp", true);
